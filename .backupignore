@@ -1,0 +1,24 @@
+.Spotlight-*/
+.DS_Store
+.Trashes
+.adobeTemp
+.fseventsd
+.DocumentRevisions*
+/afs/*
+/automount/*
+/cores/*
+/dev/*
+/Network/*
+/private/tmp/*
+/private/var/run/*
+/private/var/spool/postfix/*
+/private/var/vm/*
+/Previous Systems.localized
+/tmp/*
+/Volumes/*
+*/.Trash
+
+/Users/qaq/Documents/VirtualBuddy
+/Users/qaq/Library/Caches/Adobe/
+/Users/qaq/Library/Caches/
+/Users/qaq/Documents/BackupEnclave
