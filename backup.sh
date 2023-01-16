@@ -12,12 +12,6 @@ pwd
 mkdir -p .backup_logs
 cd .backup_logs
 
-# store stdout and stderr to backup-$(date +%Y-%m-%d).log
-# store stderr to backup-$(date +%Y-%m-%d).error.log
-
-exec > >(tee -a backup-$(date +%Y-%m-%d).log)
-exec 2> >(tee -a backup-$(date +%Y-%m-%d).error.log >&2)
-
 # Disc backup script
 # Requires rsync 3
 
@@ -62,6 +56,12 @@ BEGIN_DATE=$(date +%s)
 logger -t $PROG "Start rsync"
 
 # sleep 3
+
+# store stdout and stderr to backup-$(date +%Y-%m-%d).log
+# store stderr to backup-$(date +%Y-%m-%d).error.log
+
+exec > >(tee -a backup-$(date +%Y-%m-%d).log)
+exec 2> >(tee -a backup-$(date +%Y-%m-%d).error.log >&2)
 
 sudo /opt/homebrew/bin/rsync \
     --acls \
