@@ -6,7 +6,9 @@
 set -e # break on error
 
 cd ~
-pwd
+
+echo "[+] starting backup!"
+echo "[+] working dir: $(pwd)"
 
 # mkdir sure .backup_logs dir exists
 mkdir -p .backup_logs
@@ -16,6 +18,7 @@ cd .backup_logs
 # Requires rsync 3
 
 # Ask for the administrator password upfront
+echo "[+] checking permission..."
 sudo -v
 
 # IMPORTANT: Make sure you update the `DST` variable to match the name of the
@@ -24,6 +27,9 @@ sudo -v
 DST="/Volumes/MacBackup/"
 SRC="/System/Volumes/Data/"
 EXCLUDE="/Users/qaq/.backupignore"
+
+echo "[+] from $SRC"
+echo "[+] to $DST"
 
 PROG=$0
 
@@ -39,23 +45,35 @@ PROG=$0
 # --xattrs                 update the remote extended attributes to be the same as the local ones
 
 if [ ! -r "$SRC" ]; then
-    logger -t $PROG "Source $SRC not readable - Cannot start the sync process"
-    exit;
+    echo "[E] source $SRC is not readable"
+    exit 1
 fi
 
 if [ ! -w "$DST" ]; then
-    logger -t $PROG "Destination $DST not writeable - Cannot start the sync process"
-    exit;
+    echo "[E] dest $DST is not writeable"
+    exit 1
 fi
 
-echo "Excluding from $EXCLUDE"
+echo "[+] checking mount point..."
+MNT_CHECK=$(/usr/bin/python3 -c "import os;print(os.path.ismount('$DST'))")
+if [[ $MNT_CHECK == "True" ]]
+then
+    echo "[+] dst is mounted, good to go!"
+else
+    echo "[E] dst is not mounted!"
+    exit 1
+fi
+
+echo "[+] Excluding from $EXCLUDE"
+echo ">>>"
 cat $EXCLUDE
+echo "<<<"
+echo ""
 
 BEGIN_DATE=$(date +%s)
 
-logger -t $PROG "Start rsync"
-
-# sleep 3
+echo "[+] starting rsync..."
+sleep 3
 
 # store stdout and stderr to backup-$(date +%Y-%m-%d).log
 # store stderr to backup-$(date +%Y-%m-%d).error.log
@@ -77,7 +95,7 @@ sudo /opt/homebrew/bin/rsync \
     --ignore-errors \
     "$SRC" "$DST"
 
-logger -t $PROG "End rsync"
+echo "[+] rsync completed"
 
 END_DATE=$(date +%s)
 
